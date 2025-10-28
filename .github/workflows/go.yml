@@ -12,13 +12,13 @@ jobs:
         include:
           - os: ubuntu-latest
             # artifact_name: ${{ github.event.repository.name }}-linux-amd64
-            artifact_name: fscan-linux-amd64
+            artifact_name: fscanx-linux-amd64
             install_deps: sudo apt update && sudo apt install -y libc6-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev libasound2-dev pkg-config
             env_vars: GOOS=linux GOARCH=amd64
             build_args: -a -ldflags '-extldflags "-static" -s -w' -trimpath
           - os: ubuntu-latest
             # artifact_name: ${{ github.event.repository.name }}-windows-amd64.exe
-            artifact_name: fscan-windows-amd64.exe
+            artifact_name: fscanx-windows-amd64.exe
             install_deps: ""
             env_vars: GOOS=windows GOARCH=amd64 CGO_ENABLED=0
             build_args: -a -ldflags '-extldflags "-static" -s -w' -trimpath
@@ -26,21 +26,21 @@ jobs:
     steps:
       - name: Clone Code
         run: |
-          git clone https://github.com/shadow1ng/fscan.git
-          cd fscan
-          git checkout tags/v2.1.0
-          go mod tidy
+          git clone https://github.com/killmonday/fscanx.git
+          # cd fscanx
+          # git checkout tags/v2.1.0
+          # go mod tidy
   
       - name: Install dependencies
         run: ${{ matrix.install_deps }}
   
       - name: Build
         run: ${{ matrix.env_vars }} go build ${{ matrix.build_args }} -o dist/${{ matrix.artifact_name }}
-        working-directory: fscan
+        working-directory: fscanx
   
       - name: Upload files to Artifacts
         uses: actions/upload-artifact@v5.0.0
         with:
           name: ${{ matrix.artifact_name }}.zip
           path: |
-            fscan/dist/${{ matrix.artifact_name }}
+            fscanx/dist/${{ matrix.artifact_name }}
