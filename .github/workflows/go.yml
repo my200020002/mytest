@@ -25,7 +25,7 @@ jobs:
         run: |
           git clone https://github.com/shadow1ng/fscan.git
           cd fscan
-          git checkout tags/v2.2.0
+          git checkout tags/v2.1.0
           go mod tidy
   
       - name: Set up Go
