@@ -11,14 +11,10 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: ${{ github.event.repository.name }}-linux-amd64
-            install_deps: sudo apt update && sudo apt install -y libc6-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev libasound2-dev pkg-config
-            env_vars: GOOS=linux GOARCH=amd64
-          - os: ubuntu-latest
             artifact_name: ${{ github.event.repository.name }}-windows-amd64.exe
             install_deps: ""
             env_vars: GOOS=windows GOARCH=amd64 CGO_ENABLED=0
-            build_args: -a -ldflags '-extldflags "-static" -s -w'
+            build_args: -a -ldflags '-extldflags "-static" -s -w' -trimpath
     runs-on: ${{ matrix.os }}
     steps:
       - name: Clone Code
