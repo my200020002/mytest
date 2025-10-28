@@ -11,7 +11,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: ${{ github.event.repository.name }}-windows-amd64.exe
+            # artifact_name: ${{ github.event.repository.name }}-linux-amd64
+            artifact_name: fscan-linux-amd64
+            install_deps: sudo apt update && sudo apt install -y libc6-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev libasound2-dev pkg-config
+            env_vars: GOOS=linux GOARCH=amd64
+            build_args: -a -ldflags '-extldflags "-static" -s -w' -trimpath
+          - os: ubuntu-latest
+            # artifact_name: ${{ github.event.repository.name }}-windows-amd64.exe
+            artifact_name: fscan-windows-amd64.exe
             install_deps: ""
             env_vars: GOOS=windows GOARCH=amd64 CGO_ENABLED=0
             build_args: -a -ldflags '-extldflags "-static" -s -w' -trimpath
@@ -24,11 +31,6 @@ jobs:
           git checkout tags/v2.1.0
           go mod tidy
   
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.22'
-  
       - name: Install dependencies
         run: ${{ matrix.install_deps }}
   
@@ -39,15 +41,14 @@ jobs:
       - name: Upload files to Artifacts
         uses: actions/upload-artifact@v5.0.0
         with:
-          name: ttttt
+          name: zipfile
           path: |
-            fscan/dist/*
+            fscan/dist/${{ matrix.artifact_name }}
 
       - name: Upload binaries to release
         uses: softprops/action-gh-release@v1
-        if: github.event_name == 'release'
         with:
           files: |
-            fscan/dist/*
+            fscan/dist/${{ matrix.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
