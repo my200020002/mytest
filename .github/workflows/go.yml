@@ -40,14 +40,18 @@ jobs:
         run: ${{ matrix.env_vars }} go build ${{ matrix.build_args }} -o dist/${{ matrix.artifact_name }}
         working-directory: fscan
   
-      - name: Compress binaries
-        run: gzip dist/${{ matrix.artifact_name }}
-        working-directory: fscan
-  
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+      - name: Upload files to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: fscan/dist/${{ matrix.artifact_name }}.gz
-          asset_name: ${{ matrix.artifact_name }}.gz
-          tag: ${{ github.ref }}
+          name: ttttt
+          path: |
+            fscan/dist/*
+
+      - name: Upload binaries to release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'release'
+        with:
+          files: |
+            fscan/dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
